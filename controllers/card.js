@@ -31,9 +31,9 @@ const deleteCard = (req, res) => {
 
     return cardModel.findByIdAndRemove(cardId)
         .then((card) => {
-            // if (cardId !== card) {
-            //     return res.status(400).send({ message: "Неправильный Id карточки" })
-            // }
+            if (!card) {
+                return res.status(404).send({ message: "Карточка не найдена" })
+            }
             return res.status(200).send({ message: "Карточка удалена" })
         })
         .catch((err) => {
@@ -65,6 +65,9 @@ const likeCard = (req, res) => {
     }
     return cardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true },)
         .then((card) => {
+            if (!card) {
+                return res.status(404).send({ message: "Карточка не найдена" })
+            }
             return res.status(201).send({ message: "Лайк поставлен" })
         })
         .catch((err) => {
@@ -86,6 +89,9 @@ const dislakeCards = (req, res) => {
 
     return cardModel.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true },)
         .then((card) => {
+            if (!card) {
+                return res.status(404).send({ message: "Карточка не найдена" })
+            }
             if (!cardId) {
                 return res.status(400).send({ message: "Неправильный Id карточки" })
             }
