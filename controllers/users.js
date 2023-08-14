@@ -33,8 +33,11 @@ const getUserById = (req, res) => {
 
 const createNewUser = (req, res) => {
   return userModel.create({ ...req.body })
-    .then(() => {
-      return res.status(201).send({message: "Пользователь создан"})
+    .then((user) => {
+      return res.status(201).send({user})
+    })
+    .then((user) => {
+      return res.status(201).send(user._id)
     })
     .catch((err) => {
       console.log(err)
