@@ -10,6 +10,9 @@ const createNewCard = (req, res) => {
         .then(() => {
             return res.status(201).send({message: "Карточка создана"})
         })
+        .then((card) => {
+            return res.status(201).send(card._id)
+        })
         .catch((err) => {
             console.log(err)
             if (err.name === "ValidationError") {
@@ -30,18 +33,18 @@ const deleteCard = (req, res) => {
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send("server error")
+            return res.status(500).send({message: "server error"})
         })
 }
 
 const getCards = (req, res) => {
     return cardModel.find({})
         .then((cards) => {
-            return res.status(201).send(cards)
+            return res.status(200).send({cards})
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send("server error")
+            return res.status(500).send({message: "server error"})
         })
 }
 
@@ -50,11 +53,14 @@ const likeCard = (req, res) => {
     const owner = user._id;
     return cardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true },)
         .then(() => {
+            if(!owner) {
+                return res.status(400).send({message: "Неправильный Id пользователя"})
+            }
             return res.status(200).send({message: "Лайк поставлен"})
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send("server error")
+            return res.status(404).send({message: "server error"})
         })
 }
 
@@ -63,11 +69,14 @@ const dislakeCards = (req, res) => {
     const owner = user._id;
     return cardModel.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true },)
         .then(() => {
+            if(!owner) {
+                return res.status(400).send({message: "Неправильный Id пользователя"})
+            }
             return res.status(200).send({message: "Лайк убран"})
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send("server error")
+            return res.status(404).send("server error")
         })
 }
 

@@ -76,10 +76,10 @@ const patchUserAvatar = (req, res) => {
 
   return userModel.findByIdAndUpdate(owner, { avatar })
     .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "Аватар загружен" })
-      }
-      return res.status(200).send(user)
+      // if (!user) {
+      //   return res.status(404).send({ message: "Аватар загружен" })
+      // }
+      return res.status(200).send({avatar})
     })
     .catch((err) => {
       console.log(err)

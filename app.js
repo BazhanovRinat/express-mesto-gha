@@ -18,6 +18,10 @@ app.use(bodyParser.json())
 
 app.use(router)
 
+app.use((req, res) => {
+  res.status(404).send({ message: 'Страница не найдена' });
+});
+
 // app.use((req, res, next) => {
 //   req.user = {
 //     _id: '64d4ca01c09b9b4f93c8e489'
