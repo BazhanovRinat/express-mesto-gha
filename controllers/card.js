@@ -53,8 +53,8 @@ const likeCard = (req, res) => {
     const owner = user._id;
     return cardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true },)
         .then((card) => {
-            if (!owner) {
-                return res.status(400).send({ message: "Неправильный Id пользователя" })
+            if (!cardId) {
+                return res.status(400).send({ message: "Неправильный Id карточки" })
             }
             return res.status(201).send({ message: "Лайк поставлен" })
         })
@@ -69,11 +69,8 @@ const dislakeCards = (req, res) => {
     const owner = user._id;
     return cardModel.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true },)
         .then((card) => {
-            if (!owner) {
-                return res.status(404).send({ message: "Неправильный Id пользователя" })
-            }
             if (!cardId) {
-                return res.status(404).send({ message: "Неправильный Id карточки" })
+                return res.status(400).send({ message: "Неправильный Id карточки" })
             }
             return res.status(200).send({ message: "Лайк убран" })
         })
