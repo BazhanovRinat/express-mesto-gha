@@ -4,9 +4,9 @@ const bodyParser = require("body-parser")
 const router = require("./routes/index")
 require("dotenv").config()
 
-const { PORT, MONGODB_URL } = process.env
+//const { PORT, MONGODB_URL } = process.env
 
-mongoose.connect(MONGODB_URL, {
+mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
   useNewUrlParser: true,
 }).then(() => {
   console.log("connected to db")
@@ -26,8 +26,8 @@ app.use(router)
 //   next();
 // });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`)
+app.listen(3000, () => {
+  console.log(`Example app listening on port ${3000}`)
 })
 
 
