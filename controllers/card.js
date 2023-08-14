@@ -26,11 +26,14 @@ const deleteCard = (req, res) => {
 
     return cardModel.findByIdAndRemove(cardId)
         .then((card) => {
+            if (!cardId) {
+                return res.status(400).send({ message: "Неправильный Id карточки" })
+            }
             return res.status(200).send({ message: "Карточка удалена" })
         })
         .catch((err) => {
             console.log(err)
-            return res.status(400).send({ message: "server error" })
+            return res.status(404).send({ message: "server error" })
         })
 }
 
@@ -57,7 +60,7 @@ const likeCard = (req, res) => {
         })
         .catch((err) => {
             console.log(err)
-            return res.status(400).send({ message: "server error" })
+            return res.status(404).send({ message: "server error" })
         })
 }
 
@@ -69,7 +72,7 @@ const dislakeCards = (req, res) => {
             if (!owner) {
                 return res.status(404).send({ message: "Неправильный Id пользователя" })
             }
-            if (!card._id) {
+            if (!cardId) {
                 return res.status(404).send({ message: "Неправильный Id карточки" })
             }
             return res.status(200).send({ message: "Лайк убран" })
