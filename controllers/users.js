@@ -55,14 +55,14 @@ const patchUser = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { name, about })
+    // .then((user) => {
+    //   if (!user) {
+    //     return res.status(404).send({ message: "Данные обновлены" })
+    //   }
+    //   return res.status(200).send({ message: "Данные обновлены" })
+    // })
     .then((user) => {
-      // if (!user) {
-      //   return res.status(404).send({ message: "Данные обновлены" })
-      // }
-      return res.status(200).send({ message: "Данные обновлены" })
-    })
-    .then((user) => {
-      return res.status(200).send(user)
+      return res.status(200).send({name, about})
     })
     .catch((err) => {
       console.log(err)
