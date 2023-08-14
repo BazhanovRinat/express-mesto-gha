@@ -21,13 +21,13 @@ const getUserById = (req, res) => {
   return userModel.findById(userId)
     .then((user) => {
       if (!user) {
-        return res.status(400).send({ message: "Пользователь не найден" })
+        return res.status(404).send({ message: "Пользователь не найден" })
       }
       return res.status(200).send(user)
     })
     .catch((err) => {
       console.log(err)
-      return res.status(500).send({message: "server error"})
+      return res.status(400).send({message: "server error"})
     })
 }
 
@@ -60,6 +60,9 @@ const patchUser = (req, res) => {
       //   return res.status(404).send({ message: "Данные обновлены" })
       // }
       return res.status(200).send({ message: "Данные обновлены" })
+    })
+    .then((user) => {
+      return res.status(200).send(user)
     })
     .catch((err) => {
       console.log(err)
