@@ -26,7 +26,7 @@ const deleteCard = (req, res) => {
 
     return cardModel.findByIdAndRemove(cardId)
         .then((card) => {
-            if (!cardId) {
+            if (cardId !== card) {
                 return res.status(400).send({ message: "Неправильный Id карточки" })
             }
             return res.status(200).send({ message: "Карточка удалена" })
@@ -55,6 +55,9 @@ const likeCard = (req, res) => {
         .then((card) => {
             if (!cardId) {
                 return res.status(400).send({ message: "Неправильный Id карточки" })
+            }
+            if (cardId !== card) {
+                return res.status(404).send({ message: "Неправильный Id карточки" })
             }
             return res.status(201).send({ message: "Лайк поставлен" })
         })
