@@ -7,7 +7,7 @@ const user = {
 const getUsers = (req, res) => {
   return userModel.find({})
     .then((users) => {
-      return res.status(201).send(users)
+      return res.status(200).send(users)
     })
     .catch((err) => {
       console.log(err)
@@ -33,7 +33,7 @@ const getUserById = (req, res) => {
 
 const createNewUser = (req, res) => {
   return userModel.create({ ...req.body })
-    .then((user) => {
+    .then(() => {
       return res.status(201).send({message: "Пользователь создан"})
     })
     .catch((err) => {
