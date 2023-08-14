@@ -21,7 +21,7 @@ const getUserById = (req, res) => {
   return userModel.findById(userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" })
+        return res.status(400).send({ message: "Пользователь не найден" })
       }
       return res.status(200).send(user)
     })
@@ -56,10 +56,10 @@ const patchUser = (req, res) => {
 
   return userModel.findByIdAndUpdate(owner, { name, about })
     .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "Данные обновлены" })
-      }
-      return res.status(200).send(user)
+      // if (!user) {
+      //   return res.status(404).send({ message: "Данные обновлены" })
+      // }
+      return res.status(200).send({ message: "Данные обновлены" })
     })
     .catch((err) => {
       console.log(err)
