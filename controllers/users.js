@@ -27,14 +27,14 @@ const getUserById = (req, res) => {
     })
     .catch((err) => {
       console.log(err)
-      return res.status(400).send({message: "server error"})
+      return res.status(400).send({ message: "server error" })
     })
 }
 
 const createNewUser = (req, res) => {
   return userModel.create({ ...req.body })
     .then((user) => {
-      return res.status(201).send({user})
+      return res.status(201).send({ user })
     })
     .then((user) => {
       return res.status(201).send(user._id)
@@ -54,7 +54,7 @@ const patchUser = (req, res) => {
   const { name, about } = req.body
   const owner = user._id;
 
-  return userModel.findByIdAndUpdate(owner, { name, about })
+  return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
     // .then((user) => {
     //   if (!user) {
     //     return res.status(404).send({ message: "Данные обновлены" })
@@ -62,11 +62,11 @@ const patchUser = (req, res) => {
     //   return res.status(200).send({ message: "Данные обновлены" })
     // })
     .then((user) => {
-      return res.status(200).send({name, about})
+      return res.status(200).send({ name, about })
     })
     .catch((err) => {
       console.log(err)
-      return res.status(500).send("server error")
+      return res.status(400).send({ message: `${Object.values(err.errors).map((err) => err.message).join(", ")}` })
     })
 }
 
