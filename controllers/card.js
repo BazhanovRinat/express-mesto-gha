@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const cardModel = require("../models/card")
 
 const user = {
@@ -23,6 +24,10 @@ const createNewCard = (req, res) => {
 
 const deleteCard = (req, res) => {
     const { cardId } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(cardId)) {
+        return res.status(400).send({ message: "Некорректный id карточки" })
+    }
 
     return cardModel.findByIdAndRemove(cardId)
         .then((card) => {
@@ -51,14 +56,12 @@ const getCards = (req, res) => {
 const likeCard = (req, res) => {
     const { cardId } = req.params
     const owner = user._id;
+
+    if (!mongoose.Types.ObjectId.isValid(cardId)) {
+        return res.status(400).send({ message: "Некорректный id карточки" })
+    }
     return cardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true },)
         .then((card) => {
-            if (!cardId) {
-                return res.status(400).send({ message: "Неправильный Id карточки" })
-            }
-            if (cardId !== card) {
-                return res.status(404).send({ message: "Неправильный Id карточки" })
-            }
             return res.status(201).send({ message: "Лайк поставлен" })
         })
         .catch((err) => {
@@ -70,6 +73,11 @@ const likeCard = (req, res) => {
 const dislakeCards = (req, res) => {
     const { cardId } = req.params
     const owner = user._id;
+
+    if (!mongoose.Types.ObjectId.isValid(cardId)) {
+        return res.status(400).send({ message: "Некорректный id карточки" })
+    }
+
     return cardModel.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true },)
         .then((card) => {
             if (!cardId) {
@@ -79,7 +87,7 @@ const dislakeCards = (req, res) => {
         })
         .catch((err) => {
             console.log(err)
-            return res.status(404).send({message: "server error"})
+            return res.status(404).send({ message: "server error" })
         })
 }
 
