@@ -24,10 +24,10 @@ const getUserById = (req, res) => {
       // if (!user) {
       //   return res.status(404).send({ message: "Пользователь не найден" })
       // }
-      return res.status(200).send({user})
+      return res.status(200).send({ user })
     })
     .catch((err) => {
-      if (err.message === "NotValidId") {
+      if (err.name === "NotValidId") {
         return res.status(404).send({ message: "Пользователь не найден" })
       }
       if (err.name === 'CastError') {
@@ -70,7 +70,7 @@ const patchUser = (req, res) => {
       return res.status(200).send({ name, about })
     })
     .catch((err) => {
-      if (err.message === "NotValidId") {
+      if (err.name === "NotValidId") {
         return res.status(404).send({ message: "Пользователь не найден" })
       }
       if (err.name === "ValidationError") {
@@ -96,7 +96,7 @@ const patchUserAvatar = (req, res) => {
       return res.status(200).send({ avatar })
     })
     .catch((err) => {
-      if (err.message === "NotValidId") {
+      if (err.name === "NotValidId") {
         return res.status(404).send({ message: "Пользователь не найден" })
       }
       if (err.name === "ValidationError") {

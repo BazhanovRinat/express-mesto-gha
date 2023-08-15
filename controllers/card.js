@@ -37,9 +37,6 @@ const deleteCard = (req, res) => {
             return res.status(200).send({ message: "Карточка удалена" })
         })
         .catch((err) => {
-            if (err.name === 'CastError') {
-                return res.status(404).send({ message: "Неправильный Id карточки" })
-            }
             console.log(err)
             return res.status(404).send({ message: "server error" })
         })
@@ -71,9 +68,6 @@ const likeCard = (req, res) => {
             return res.status(200).send({ message: "Лайк поставлен" })
         })
         .catch((err) => {
-            if (err.name === 'CastError') {
-                return res.status(404).send({ message: "Неправильный Id карточки" })
-            }
             console.log(err)
             return res.status(404).send({ message: "server error" })
         })
@@ -98,9 +92,6 @@ const dislakeCards = (req, res) => {
             return res.status(200).send({ message: "Лайк убран" })
         })
         .catch((err) => {
-            if (err.name === 'CastError') {
-                return res.status(404).send({ message: "Неправильный Id карточки" })
-            }
             console.log(err)
             return res.status(404).send({ message: "server error" })
         })
