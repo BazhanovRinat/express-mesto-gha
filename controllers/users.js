@@ -57,32 +57,6 @@ const createNewUser = (req, res) => {
     })
 }
 
-const patchUser = (req, res) => {
-  const { name, about } = req.body
-  const owner = user._id;
-
-  return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
-    .orFail(new Error("NotValidId"))
-    .then((user) => {
-      // if (!user) {
-      //   return res.status(404).send({ message: "Пользователь не найден" });
-      // }
-      return res.status(200).send(user)
-    })
-    .catch((err) => {
-      if (err.name === "NotValidId") {
-        return res.status(404).send({ message: "Пользователь не найден" })
-      }
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
-        })
-      }
-      console.log(err)
-      return res.status(500).send({ message: `${Object.values(err.errors).map((err) => err.message).join(", ")}` })
-    })
-}
-
 const patchUserAvatar = (req, res) => {
   const { avatar } = req.body
   const owner = user._id;
@@ -106,6 +80,32 @@ const patchUserAvatar = (req, res) => {
       }
       console.log(err)
       return res.status(500).send("server error")
+    })
+}
+
+const patchUser = (req, res) => {
+  const { name, about } = req.body
+  const owner = user._id;
+
+  return userModel.findByIdAndUpdate(owner, { name, about }, )
+    // .orFail(new Error("NotValidId"))
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
+      return res.status(200).send({ name, about })
+    })
+    .catch((err) => {
+      // if (err.name === "NotValidId") {
+      //   return res.status(404).send({ message: "Пользователь не найден" })
+      // }
+      if (err.name === "ValidationError") {
+        return res.status(400).send({
+          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
+        })
+      }
+      console.log(err)
+      return res.status(500).send({ message: `${Object.values(err.errors).map((err) => err.message).join(", ")}` })
     })
 }
 
