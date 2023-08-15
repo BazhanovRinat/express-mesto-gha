@@ -87,7 +87,7 @@ const patchUser = (req, res) => {
   const { name, about } = req.body
   const owner = user._id;
 
-  return userModel.findByIdAndUpdate(owner, { name, about }, )
+  return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
     // .orFail(new Error("NotValidId"))
     .then((user) => {
       if (!user) {
