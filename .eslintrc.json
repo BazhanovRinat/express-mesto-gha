@@ -1,8 +1,7 @@
 {
   "extends": "airbnb-base",
   "rules": {
-    "camelcase": ["error", { "allowAfterThis": true, "allow": ["_id$", "^_"] }],
-    "no-console": "off"
+    "camelcase": ["error", { "allowAfterThis": true, "allow": ["_id$", "^_"] }]
   }
 }
 
