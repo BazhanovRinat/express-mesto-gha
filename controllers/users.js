@@ -19,17 +19,13 @@ const getUserById = (req, res) => {
   const { userId } = req.params
 
   return userModel.findById(userId)
-    .orFail(new Error("NotValidId"))
     .then((user) => {
-      // if (!user) {
-      //   return res.status(404).send({ message: "Пользователь не найден" })
-      // }
+      if (!user) {
+        return res.status(404).send({ message: "Пользователь не найден" })
+      }
       return res.status(200).send({ user })
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: "Пользователь не найден" })
-      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: "Неправильный Id карточки" });
       }
@@ -62,17 +58,13 @@ const patchUserAvatar = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
-    .orFail(new Error("NotValidId"))
     .then((user) => {
-      // if (!user) {
-      //   return res.status(404).send({ message: "Пользователь не найден" });
-      // }
+      if (!user) {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
       return res.status(200).send({ avatar })
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: "Пользователь не найден" })
-      }
       if (err.name === "ValidationError") {
         return res.status(400).send({
           message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
@@ -88,7 +80,6 @@ const patchUser = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
-    // .orFail(new Error("NotValidId"))
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: "Пользователь не найден" });
@@ -96,9 +87,6 @@ const patchUser = (req, res) => {
       return res.status(200).send({ name, about })
     })
     .catch((err) => {
-      // if (err.name === "DocumentNotFoundError") {
-      //   return res.status(404).send({ message: "Пользователь не найден" })
-      // }
       if (err.name === "ValidationError") {
         return res.status(400).send({
           message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
