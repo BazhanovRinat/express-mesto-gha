@@ -19,17 +19,17 @@ const getUserById = (req, res) => {
   const { userId } = req.params
 
   return userModel.findById(userId)
-    .orFail(new Error("NotValidId"))
+    // .orFail(new Error("NotValidId"))
     .then((user) => {
-      // if (!user) {
-      //   return res.status(404).send({ message: "Пользователь не найден" })
-      // }
+      if (!user) {
+        return res.status(404).send({ message: "Пользователь не найден" })
+      }
       return res.status(200).send({ user })
     })
     .catch((err) => {
-      if (err.name === "NotValidId") {
-        return res.status(404).send({ message: "Пользователь не найден" })
-      }
+      // if (err.name === "NotValidId") {
+      //   return res.status(404).send({ message: "Пользователь не найден" })
+      // }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: "Неправильный Id карточки" });
       }
