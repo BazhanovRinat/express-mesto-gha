@@ -9,7 +9,7 @@ const createNewCard = (req, res) => {
     const owner = user._id;
     return cardModel.create({ ...req.body, owner })
         .then((card) => {
-            return res.status(201).send({ message: "Карточка создана", _id: card._id })
+            return res.status(201).send({_id: card._id })
         })
         .catch((err) => {
             console.log(err)
