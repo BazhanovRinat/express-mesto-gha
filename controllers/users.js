@@ -67,7 +67,7 @@ const patchUser = (req, res) => {
       // if (!user) {
       //   return res.status(404).send({ message: "Пользователь не найден" });
       // }
-      return res.status(200).send({ name, about })
+      return res.status(200).send(user)
     })
     .catch((err) => {
       if (err.name === "NotValidId") {
