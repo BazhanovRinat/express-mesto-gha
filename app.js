@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 const router = require("./routes/index")
-const helmet = require('helmet');
+// const helmet = require('helmet');
 require("dotenv").config()
 
 //const { PORT, MONGODB_URL } = process.env
@@ -15,7 +15,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
 
 const app = express()
 
-app.use(helmet());
+// app.use(helmet());
 
 app.use(bodyParser.json())
 
