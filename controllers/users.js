@@ -19,23 +19,30 @@ const getUserById = (req, res) => {
   const { userId } = req.params
 
   return userModel.findById(userId)
+    .orFail(new Error("NotValidId"))
     .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" })
-      }
+      // if (!user) {
+      //   return res.status(404).send({ message: "Пользователь не найден" })
+      // }
       return res.status(200).send(user)
     })
     .catch((err) => {
+      if (err.message === "NotValidId") {
+        return res.status(404).send({ message: "Пользователь не найден" })
+      }
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: "Неправильный Id карточки" });
+      }
       console.log(err)
-      return res.status(400).send({ message: "server error" })
+      return res.status(500).send({ message: "server error" })
     })
 }
 
 const createNewUser = (req, res) => {
   return userModel.create({ ...req.body })
-    .then((user) => {
-      return res.status(201).send({ user })
-    })
+    // .then((user) => {
+    //   return res.status(201).send({ user })
+    // })
     .then((user) => {
       return res.status(201).send(user._id)
     })
@@ -55,18 +62,24 @@ const patchUser = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
-    // .then((user) => {
-    //   if (!user) {
-    //     return res.status(404).send({ message: "Данные обновлены" })
-    //   }
-    //   return res.status(200).send({ message: "Данные обновлены" })
-    // })
+    .orFail(new Error("NotValidId"))
     .then((user) => {
+      // if (!user) {
+      //   return res.status(404).send({ message: "Пользователь не найден" });
+      // }
       return res.status(200).send({ name, about })
     })
     .catch((err) => {
+      if (err.message === "NotValidId") {
+        return res.status(404).send({ message: "Пользователь не найден" })
+      }
+      if (err.name === "ValidationError") {
+        return res.status(400).send({
+          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
+        })
+      }
       console.log(err)
-      return res.status(400).send({ message: `${Object.values(err.errors).map((err) => err.message).join(", ")}` })
+      return res.status(500).send({ message: `${Object.values(err.errors).map((err) => err.message).join(", ")}` })
     })
 }
 
@@ -74,14 +87,23 @@ const patchUserAvatar = (req, res) => {
   const { avatar } = req.body
   const owner = user._id;
 
-  return userModel.findByIdAndUpdate(owner, { avatar })
+  return userModel.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
+    .orFail(new Error("NotValidId"))
     .then((user) => {
       // if (!user) {
-      //   return res.status(404).send({ message: "Аватар загружен" })
+      //   return res.status(404).send({ message: "Пользователь не найден" });
       // }
-      return res.status(200).send({avatar})
+      return res.status(200).send({ avatar })
     })
     .catch((err) => {
+      if (err.message === "NotValidId") {
+        return res.status(404).send({ message: "Пользователь не найден" })
+      }
+      if (err.name === "ValidationError") {
+        return res.status(400).send({
+          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
+        })
+      }
       console.log(err)
       return res.status(500).send("server error")
     })

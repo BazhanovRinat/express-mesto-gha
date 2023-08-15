@@ -65,7 +65,7 @@ const likeCard = (req, res) => {
             if (!card) {
                 return res.status(404).send({ message: "Карточка не найдена" })
             }
-            return res.status(201).send({ message: "Лайк поставлен" })
+            return res.status(200).send({ message: "Лайк поставлен" })
         })
         .catch((err) => {
             console.log(err)
