@@ -19,14 +19,18 @@ const getUserById = (req, res) => {
   const { userId } = req.params
 
   return userModel.findById(userId)
-    .orFail(new Error("Error"))
+    // .orFail(new Error("Error"))
     .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "Пользователь не найден" })
+      }
       return res.status(200).send({ user })
     })
     .catch((err) => {
-      if (err.name === "Error") {
-        return res.status(404).send({ message: "Пользователь не найден" });
-      }
+      console.log(err.name)
+      // if (err.name === "Error") {
+      //   return res.status(404).send({ message: "Пользователь не найден" });
+      // }
       console.log(err)
       return res.status(500).send({ message: "Произошла ошибка" })
     })
