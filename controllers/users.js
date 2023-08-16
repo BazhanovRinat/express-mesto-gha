@@ -1,7 +1,7 @@
 const userModel = require("../models/user")
 
 const user = {
-  _id: '64d4ca01c09b9b4f93c8e489'
+  _id: '64d4ca01c09b9b4f93c8e488'
 }
 
 const getUsers = (req, res) => {
@@ -19,13 +19,14 @@ const getUserById = (req, res) => {
   const { userId } = req.params
 
   return userModel.findById(userId)
+    .orFail(new Error("Error"))
     .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" })
-      }
       return res.status(200).send({ user })
     })
     .catch((err) => {
+      if (err.name === "Error") {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: "Неправильный Id карточки" });
       }
@@ -58,14 +59,14 @@ const patchUserAvatar = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
+    .orFail(new Error("Error"))
     .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" });
-      } else {
-        return res.status(200).send({ avatar })
-      }
+      return res.status(200).send({ avatar })
     })
     .catch((err) => {
+      if (err.name === "Error") {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
       if (err.name === "ValidationError") {
         return res.status(400).send({
           message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
@@ -81,25 +82,21 @@ const patchUser = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
-    // .orFail(new Error("NotFoundError"))
+    .orFail(new Error("Error"))
     .then((user) => {
       console.log(user)
-      if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" });
-      } else {
-        return res.status(200).send({ name, about })
-      }
+      return res.status(200).send({ name, about })
     })
     .catch((err) => {
-      // if (err.name === "NotFoundError") {
-      //   return res.status(404).send({ message: "Пользователь не найден" });
-      // }
+      console.log(err.name)
+      if (err.name === "Error") {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
       if (err.name === "ValidationError") {
         return res.status(400).send({
           message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
         })
       }
-      console.log(err)
       return res.status(500).send({ message: "Произошла ошибка" })
     })
 }
