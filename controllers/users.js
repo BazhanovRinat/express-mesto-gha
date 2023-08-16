@@ -1,7 +1,7 @@
 const userModel = require("../models/user")
 
 const user = {
-  _id: '64d4ca01c09b9b4f93c8e488'
+  _id: '64d4ca01c09b9b4f93c8e489'
 }
 
 const getUsers = (req, res) => {
