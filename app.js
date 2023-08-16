@@ -5,7 +5,7 @@ const router = require("./routes/index")
 const helmet = require('helmet');
 require("dotenv").config()
 
-//const { PORT, MONGODB_URL } = process.env
+// //const { PORT, MONGODB_URL } = process.env
 
 mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
   useNewUrlParser: true,
