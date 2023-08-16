@@ -28,6 +28,9 @@ const getUserById = (req, res) => {
     })
     .catch((err) => {
       console.log(err.name)
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: "Неправильный Id карточки" });
+      }
       // if (err.name === "Error") {
       //   return res.status(404).send({ message: "Пользователь не найден" });
       // }
@@ -60,14 +63,17 @@ const patchUserAvatar = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
-    .orFail(new Error("Error"))
+    // .orFail(new Error("Error"))
     .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
       return res.status(200).send({ avatar })
     })
     .catch((err) => {
-      if (err.name === "Error") {
-        return res.status(404).send({ message: "Пользователь не найден" });
-      }
+      // if (err.name === "Error") {
+      //   return res.status(404).send({ message: "Пользователь не найден" });
+      // }
       if (err.name === "ValidationError") {
         return res.status(400).send({
           message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
@@ -86,7 +92,7 @@ const patchUser = (req, res) => {
     // .orFail(new Error("Error"))
     .then((user) => {
       console.log(user)
-      if (user.id !== user.id) {
+      if (!user) {
         return res.status(404).send({ message: "Пользователь не найден" });
       }
       return res.status(200).send({ name, about })
