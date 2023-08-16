@@ -27,9 +27,6 @@ const getUserById = (req, res) => {
       if (err.name === "Error") {
         return res.status(404).send({ message: "Пользователь не найден" });
       }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: "Неправильный Id карточки" });
-      }
       console.log(err)
       return res.status(500).send({ message: "Произошла ошибка" })
     })
@@ -72,7 +69,7 @@ const patchUserAvatar = (req, res) => {
           message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
         })
       }
-      console.log(err)
+      console.log(err.name)
       return res.status(500).send({ message: "Произошла ошибка" })
     })
 }
