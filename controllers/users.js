@@ -59,7 +59,7 @@ const patchUserAvatar = (req, res) => {
 
   return userModel.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      if (!owner) {
+      if (!user) {
         return res.status(404).send({ message: "Пользователь не найден" });
       }
       return res.status(200).send({ avatar })
@@ -82,7 +82,7 @@ const patchUser = (req, res) => {
   return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       console.log(user)
-      if (!owner) {
+      if (!user) {
         return res.status(404).send({ message: "Пользователь не найден" });
       }
       return res.status(200).send({ name, about })
