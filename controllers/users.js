@@ -83,16 +83,19 @@ const patchUser = (req, res) => {
   const owner = user._id;
 
   return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
-    .orFail(new Error("Error"))
+    // .orFail(new Error("Error"))
     .then((user) => {
       console.log(user)
+      if (user.id !== user.id) {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
       return res.status(200).send({ name, about })
     })
     .catch((err) => {
       console.log(err.name)
-      if (err.name === "Error") {
-        return res.status(404).send({ message: "Пользователь не найден" });
-      }
+      // if (err.name === "Error") {
+      //   return res.status(404).send({ message: "Пользователь не найден" });
+      // }
       if (err.name === "ValidationError") {
         return res.status(400).send({
           message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
