@@ -61,8 +61,9 @@ const patchUserAvatar = (req, res) => {
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: "Пользователь не найден" });
+      } else {
+        return res.status(200).send({ avatar })
       }
-      return res.status(200).send({ avatar })
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -85,8 +86,9 @@ const patchUser = (req, res) => {
       console.log(user)
       if (!user) {
         return res.status(404).send({ message: "Пользователь не найден" });
+      } else {
+        return res.status(200).send({ name, about })
       }
-      return res.status(200).send({ name, about })
     })
     .catch((err) => {
       // if (err.name === "NotFoundError") {
