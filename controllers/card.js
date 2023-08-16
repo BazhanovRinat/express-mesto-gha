@@ -18,7 +18,7 @@ const createNewCard = (req, res) => {
                     message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
                 })
             }
-            return res.status(500).send("server error")
+            return res.status(500).send({ message: "Произошла ошибка" })
         })
 }
 
@@ -38,7 +38,7 @@ const deleteCard = (req, res) => {
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send({ message: "server error" })
+            return res.status(500).send({ message: "Произошла ошибка" })
         })
 }
 
@@ -49,7 +49,7 @@ const getCards = (req, res) => {
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send({ message: "server error" })
+            return res.status(500).send({ message: "Произошла ошибка" })
         })
 }
 
@@ -69,7 +69,7 @@ const likeCard = (req, res) => {
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send({ message: "server error" })
+            return res.status(500).send({ message: "Произошла ошибка" })
         })
 }
 
@@ -93,7 +93,7 @@ const dislakeCards = (req, res) => {
         })
         .catch((err) => {
             console.log(err)
-            return res.status(500).send({ message: "server error" })
+            return res.status(500).send({ message: "Произошла ошибка" })
         })
 }
 
