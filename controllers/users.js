@@ -36,7 +36,6 @@ const getUserById = (req, res, next) => {
 const createNewUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body
 
-  //вместо if надо будет использовать celebrate
   if (!email || !password) {
     return next(new BadRequest("Почта или пароль не могут быть пустыми"))
   }
@@ -52,6 +51,9 @@ const createNewUser = (req, res, next) => {
       console.log(err)
       if (err.code === 11000) {
         return next(new Conflict("Такой пользователь уже существует"))
+      }
+      if (err.name === "ValidationError") {
+        return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
       }
     })
 }
@@ -77,7 +79,7 @@ const patchUserAvatar = (req, res, next) => {
     })
 }
 
-const patchUser = (req, res) => {
+const patchUser = (req, res, next) => {
   const { name, about } = req.body
 
   return userModel.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
