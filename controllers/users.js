@@ -1,72 +1,69 @@
-const userModel = require("../models/user")
+const userModel = require("../models/user");
+const bcrypt = require("bcrypt");
+const { getJwtToken } = require("../utils/jwt");
+const UnauthorizedError = require("../errors/unauthorized-error");
+const NotFound = require("../errors/notFound-error")
+const BadRequest = require("../errors/badRequest-error")
+const Conflict = require("../errors/conflict-error")
 
-const user = {
-  _id: '64d4ca01c09b9b4f93c8e489'
-}
+const SALT_ROUNDS = 10;
 
 const getUsers = (req, res) => {
   return userModel.find({})
     .then((users) => {
       return res.status(200).send(users)
     })
-    .catch((err) => {
-      console.log(err)
-      return res.status(500).send({ message: "Произошла ошибка" })
-    })
 }
-
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { userId } = req.params
 
   return userModel.findById(userId)
     // .orFail(new Error("Error"))
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" })
+        return next(new NotFound("Пользователь не найден"))
       }
       return res.status(200).send({ user })
     })
     .catch((err) => {
       console.log(err.name)
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: "Неправильный Id карточки" });
+        return next(new BadRequest("Неправильный Id пользователя"))
       }
-      // if (err.name === "Error") {
-      //   return res.status(404).send({ message: "Пользователь не найден" });
-      // }
-      console.log(err)
-      return res.status(500).send({ message: "Произошла ошибка" })
     })
 }
 
-const createNewUser = (req, res) => {
-  return userModel.create({ ...req.body })
-    .then((user) => {
-      return res.status(201).send({ user })
+const createNewUser = (req, res, next) => {
+  const { name, about, avatar, email, password } = req.body
+
+  //вместо if надо будет использовать celebrate
+  if (!email || !password) {
+    return next(new BadRequest("Почта или пароль не могут быть пустыми"))
+  }
+
+  bcrypt.hash(password, SALT_ROUNDS)
+    .then((hash) => {
+      return userModel.create({ name, about, avatar, email, password: hash })
     })
-    // .then((user) => {
-    //   return res.status(201).send(user._id)
-    // })
+    .then(({ _id }) => {
+      return res.status(201).send({ id: _id })
+    })
     .catch((err) => {
       console.log(err)
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
-        })
+      if (err.code === 11000) {
+        return next(new Conflict("Такой пользователь уже существует"))
       }
-      return res.status(500).send({ message: "Произошла ошибка" })
     })
 }
 
-const patchUserAvatar = (req, res) => {
+const patchUserAvatar = (req, res, next) => {
   const { avatar } = req.body
-  const owner = user._id;
 
-  return userModel.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
+  return userModel.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     // .orFail(new Error("Error"))
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" });
+        return next(new NotFound("Пользователь не найден"))
       }
       return res.status(200).send({ avatar })
     })
@@ -75,25 +72,20 @@ const patchUserAvatar = (req, res) => {
       //   return res.status(404).send({ message: "Пользователь не найден" });
       // }
       if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
-        })
+        return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
       }
-      console.log(err.name)
-      return res.status(500).send({ message: "Произошла ошибка" })
     })
 }
 
 const patchUser = (req, res) => {
   const { name, about } = req.body
-  const owner = user._id;
 
-  return userModel.findByIdAndUpdate(owner, { name, about }, { new: true, runValidators: true })
+  return userModel.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     // .orFail(new Error("Error"))
     .then((user) => {
       console.log(user)
       if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" });
+        return next(new NotFound("Пользователь не найден"))
       }
       return res.status(200).send({ name, about })
     })
@@ -103,14 +95,57 @@ const patchUser = (req, res) => {
       //   return res.status(404).send({ message: "Пользователь не найден" });
       // }
       if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
-        })
+        return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
       }
-      return res.status(500).send({ message: "Произошла ошибка" })
     })
 }
 
-module.exports = { getUsers, getUserById, createNewUser, patchUser, patchUserAvatar }
+const login = (req, res, next) => {
+  const { email, password } = req.body
+
+  //вместо if надо будет использовать celebrate
+  if (!email || !password) {
+    return next(new BadRequest("Почта или пароль не могут быть пустыми"))
+  }
+
+  userModel.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        return next(new NotFound("Пользователь не найден"))
+        //return res.status(403).send({ message: "Пользователя не существует" })
+      }
+      bcrypt.compare(password, user.password, function (err, isValidPassport) {
+        if (!isValidPassport) {
+          return next(new UnauthorizedError("Пароль не верный"))
+          //return res.status(401).send({ message: "Пароль не верный" })
+        }
+        const token = getJwtToken({ _id: user._id });
+        return res.status(200).send({ token, password: user.password })
+      });
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const getCurrentUser = (req, res, next) => {
+  //console.log(req.user._id)
+  return userModel.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        return next(new NotFound("Пользователь не найден"))
+      }
+      return res.status(200).send({ user })
+    })
+    .catch((err) => {
+      console.log(err.name)
+      if (err.name === 'CastError') {
+        return next(new BadRequest("Неправильный Id пользователя"))
+      }
+      console.log(err)
+    })
+}
+
+module.exports = { getUsers, getUserById, createNewUser, patchUser, patchUserAvatar, login, getCurrentUser }
 
 
