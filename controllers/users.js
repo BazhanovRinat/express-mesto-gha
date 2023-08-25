@@ -99,6 +99,7 @@ const patchUser = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
       }
+      next()
     })
 }
 

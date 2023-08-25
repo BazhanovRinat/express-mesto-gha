@@ -12,7 +12,7 @@ const { JWT_SECRET = "SECRET_KEY" } = process.env
     const token = req.headers.authorization
  
     if (!isAuthorized(token)) {
-        next(new UnauthorizedError("Необходима авторизация"))
+        return next(new UnauthorizedError("Необходима авторизация"))
         // return res.status(401).send({ message: "Нет авторизации" })
     }
   
@@ -23,7 +23,7 @@ const { JWT_SECRET = "SECRET_KEY" } = process.env
     try {
       payload = jwt.verify(tokenNoBear, JWT_SECRET);
     } catch (err) {
-      next(new UnauthorizedError("Необходима авторизация"))
+      return next(new UnauthorizedError("Необходима авторизация"))
       // return handleAuthError(res);
     }
     
