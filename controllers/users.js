@@ -126,6 +126,11 @@ const login = (req, res, next) => {
           //return res.status(401).send({ message: "Пароль не верный" })
         }
         const token = getJwtToken({ _id: user._id });
+
+        res.cookie("jwt", token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        })
         return res.status(200).send({ token, password: user.password })
       });
     })
