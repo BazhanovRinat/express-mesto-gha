@@ -6,7 +6,7 @@ const BadRequest = require("../errors/badRequest-error") //400
 const Conflict = require("../errors/conflict-error") //409
 const Forbidden = require("../errors/forbidden-error")
 
-const createNewCard = (req, res) => {
+const createNewCard = (req, res, next) => {
     const userId = req.user._id
     console.log(userId)
     return cardModel.create({ ...req.body, owner: userId})
@@ -44,7 +44,7 @@ const deleteCard = (req, res, next) => {
         })
 }
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
     return cardModel.find({})
         .then((cards) => {
             return res.status(200).send({ cards })
@@ -54,7 +54,7 @@ const getCards = (req, res) => {
         })
 }
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
     const { cardId } = req.params
     console.log(req.user._id)
 
@@ -73,7 +73,7 @@ const likeCard = (req, res) => {
         })
 }
 
-const dislakeCards = (req, res) => {
+const dislakeCards = (req, res, next) => {
     const { cardId } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(cardId)) {
