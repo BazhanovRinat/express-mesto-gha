@@ -17,7 +17,6 @@ const { JWT_SECRET = "SECRET_KEY" } = process.env
     }
   
     const tokenNoBear = extractBearerToken(token);
-   
     let payload;
   
     try {

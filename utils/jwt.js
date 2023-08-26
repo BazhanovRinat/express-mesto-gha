@@ -8,6 +8,7 @@ const getJwtToken = (payLoad) => {
 }
 
 const isAuthorized = (token) => {
+    console.log(token)
     return jwt.verify(token, JWT_SECRET, function (err, decoded) {
         if (err) return false
         return userModel.findById(decoded._id)
