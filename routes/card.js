@@ -8,8 +8,8 @@ router.use(auth)
 
 router.post("/cards", celebrate({
     body: Joi.object().keys({
-        name: Joi.string().min(2).max(30),
-        link: Joi.string().pattern(/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]+(?:#)?$/),
+        name: Joi.string().min(2).max(30).required(),
+        link: Joi.string().required().pattern(/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]+(?:#)?$/),
     }),
 }), createNewCard)
 router.get("/cards", getCards)
