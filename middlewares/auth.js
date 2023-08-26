@@ -11,7 +11,7 @@ const { JWT_SECRET = "SECRET_KEY" } = process.env
   const auth = (req, res, next) => {
     const token = req.headers.authorization
  
-    if (!isAuthorized(token)) {
+    if (isAuthorized(token)) {
         return next(new UnauthorizedError("Необходима авторизация"))
         // return res.status(401).send({ message: "Нет авторизации" })
     }
