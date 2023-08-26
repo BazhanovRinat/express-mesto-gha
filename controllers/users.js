@@ -44,8 +44,9 @@ const createNewUser = (req, res, next) => {
     .then((hash) => {
       return userModel.create({ name, about, avatar, email, password: hash })
     })
-    .then(({ _id }) => {
-      return res.status(201).send({ id: _id })
+    .then((user) => {
+      // return res.status(201).send({ id: _id })
+      return res.status(201).send(user)
     })
     .catch((err) => {
       console.log(err)
@@ -114,7 +115,7 @@ const login = (req, res, next) => {
   userModel.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return next(new NotFound("Пользователь не найден"))
+        return next(new UnauthorizedError("Пользователь не найден"))
         //return res.status(403).send({ message: "Пользователя не существует" })
       }
       bcrypt.compare(password, user.password, function (err, isValidPassport) {
