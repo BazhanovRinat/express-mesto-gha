@@ -4,7 +4,8 @@ const bodyParser = require("body-parser")
 const router = require("./routes/index")
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const NotFound = require("./errors/notFound-error")
+const errorHandler = require("./errors/errorHandler");
+//const NotFound = require("./errors/notFound-error")
 
 require("dotenv").config()
 
@@ -27,7 +28,7 @@ app.use(bodyParser.json())
 app.use(router)
 
 // app.use((req, res, next) => {
-//    next(new NotFound("Страница не найдена"))
+//   return next(new NotFound("Страница не найдена"))
 // });
 
 app.listen(3000, () => {

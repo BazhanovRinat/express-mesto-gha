@@ -5,9 +5,13 @@ const cardRouter = require("./card")
 //const auth = require("../middlewares/auth");
 const errorHandler = require("../errors/errorHandler");
 const { errors } = require('celebrate');
+const NotFound = require("../errors/notFound-error")
 
 
 //router.use(auth)
+router.use((req, res, next) => {
+    return next(new NotFound("Страница не найдена"))
+ });
 router.use(usersRouter)
 router.use(cardRouter)
 
