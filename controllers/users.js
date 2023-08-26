@@ -45,8 +45,10 @@ const createNewUser = (req, res, next) => {
       return userModel.create({ name, about, avatar, email, password: hash })
     })
     .then((user) => {
-      // return res.status(201).send({ id: _id })
-      return res.status(201).send(user)
+      const userNoPassword = user.toObject();
+      delete userNoPassword.password;
+  
+      return res.status(201).send(userNoPassword);
     })
     .catch((err) => {
       console.log(err)
