@@ -23,7 +23,7 @@ const { JWT_SECRET = "SECRET_KEY" } = process.env
     try {
       payload = jwt.verify(tokenNoBear, JWT_SECRET);
     } catch (err) {
-      return next(new UnauthorizedError("Необходима авторизация"))
+      return next(new UnauthorizedError("Необходима авторизация!!"))
       // return handleAuthError(res);
     }
     
