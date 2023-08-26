@@ -26,9 +26,9 @@ app.use(bodyParser.json())
 
 app.use(router)
 
-app.use((req, res) => {
-  return next(new NotFound("Страница не найдена"))
-});
+// app.use((req, res, next) => {
+//    next(new NotFound("Страница не найдена"))
+// });
 
 app.listen(3000, () => {
   console.log(`Example app listening on port ${3000}`)
