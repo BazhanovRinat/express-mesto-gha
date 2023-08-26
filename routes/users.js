@@ -33,7 +33,7 @@ router.patch("/users/me", celebrate({
 router.get("/users/me", getCurrentUser)
 router.patch("/users/me/avatar", celebrate({
     body: Joi.object().keys({
-        avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?[\w\-\.]+(:\d+)?(\/[\w\-\.~:\/?#\[\]@!$&'()*+,;=]*)?$/),
+        avatar: Joi.string().pattern(/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]+(?:#)?$/),
     }),
 }), patchUserAvatar)
 router.get("/users/:userId", celebrate({
