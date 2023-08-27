@@ -1,7 +1,16 @@
+// {
+//   "extends": "airbnb-base",
+//   "rules": {
+//     "camelcase": ["error", { "allowAfterThis": true, "allow": ["_id$", "^_"] }]
+//   }
+// }
+
 {
-  "extends": "airbnb-base",
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
   "rules": {
-    "camelcase": ["error", { "allowAfterThis": true, "allow": ["_id$", "^_"] }]
+    "camelcase": ["error", { "allow": ["_id$", "^_"] }]
   }
 }
 

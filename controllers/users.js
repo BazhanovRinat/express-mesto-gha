@@ -13,6 +13,10 @@ const getUsers = (req, res) => {
     .then((users) => {
       return res.status(200).send(users)
     })
+    .catch((err) => {
+      console.log(err)
+      next(err)
+    })
 }
 const getUserById = (req, res, next) => {
   const { userId } = req.params
@@ -30,6 +34,7 @@ const getUserById = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequest("Неправильный Id пользователя"))
       }
+      next(err)
     })
 }
 
@@ -47,7 +52,7 @@ const createNewUser = (req, res, next) => {
     .then((user) => {
       const userNoPassword = user.toObject();
       delete userNoPassword.password;
-  
+
       return res.status(201).send(userNoPassword);
     })
     .catch((err) => {
@@ -58,6 +63,7 @@ const createNewUser = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
       }
+      next(err)
     })
 }
 
@@ -79,6 +85,7 @@ const patchUserAvatar = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
       }
+      next(err)
     })
 }
 
@@ -102,7 +109,7 @@ const patchUser = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
       }
-      next()
+      next(err)
     })
 }
 
@@ -131,11 +138,12 @@ const login = (req, res, next) => {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
         })
-        return res.status(200).send({ token, password: user.password })
+        return res.status(200).send({ token })
       });
     })
     .catch((err) => {
       console.log(err)
+      next(err)
     })
 }
 
@@ -154,6 +162,7 @@ const getCurrentUser = (req, res, next) => {
         return next(new BadRequest("Неправильный Id пользователя"))
       }
       console.log(err)
+      next(err)
     })
 }
 

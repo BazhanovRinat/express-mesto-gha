@@ -14,9 +14,9 @@ router.use(usersRouter)
 router.use(cardRouter)
 
 router.use(errors());
-router.use((req, res, next) => {
-    return next(new NotFound("Страница не найдена"))
- });
-router.use(errorHandler)
+// router.use((req, res, next) => {
+//     return next(new NotFound("Страница не найдена"))
+//  });
+// router.use(errorHandler)
 
 module.exports = router

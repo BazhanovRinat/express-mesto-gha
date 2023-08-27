@@ -4,12 +4,6 @@ const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET = "SECRET_KEY" } = process.env
 
-const handleAuthError = (res) => {
-  res
-    .status(401)
-    .send({ message: 'Необходима авторизация' });
-};
-
 const extractBearerToken = (header) => {
   return header.replace('Bearer ', '');
 };
@@ -27,7 +21,7 @@ const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
-    return handleAuthError(res);
+    return next(new UnauthorizedError("Необходима авторизация"))
   }
 
   const token = extractBearerToken(authorization);
@@ -36,7 +30,7 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    return handleAuthError(res);
+    return next(new UnauthorizedError("Необходима авторизация"))
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса

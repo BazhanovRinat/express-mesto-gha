@@ -9,7 +9,8 @@ const Forbidden = require("../errors/forbidden-error")
 const createNewCard = (req, res, next) => {
     const userId = req.user._id
     console.log(userId)
-    return cardModel.create({ ...req.body, owner: userId})
+    const { name, link, owner } = req.body
+    return cardModel.create({name, link, owner: userId })
         .then((card) => {
             return res.status(201).send({ _id: card._id })
         })
@@ -37,10 +38,13 @@ const deleteCard = (req, res, next) => {
                 return next(new Forbidden("Нельзя удалить чужую карточку"))
             }
             card.deleteOne()
-            return res.status(200).send({ message: "Карточка удалена" })
+                .then(() => {
+                    return res.status(200).send({ message: "Карточка удалена" })
+                })
         })
         .catch((err) => {
             console.log(err)
+            next(err)
         })
 }
 
@@ -51,6 +55,7 @@ const getCards = (req, res, next) => {
         })
         .catch((err) => {
             console.log(err)
+            next(err)
         })
 }
 
@@ -61,7 +66,7 @@ const likeCard = (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(cardId)) {
         return next(new BadRequest("Некорректный id карточки"))
     }
-    return cardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true },)
+    return cardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
         .then((card) => {
             if (!card) {
                 return next(new NotFound("Карточка не найдена"))
@@ -70,6 +75,7 @@ const likeCard = (req, res, next) => {
         })
         .catch((err) => {
             console.log(err)
+            next(err)
         })
 }
 
@@ -80,7 +86,7 @@ const dislakeCards = (req, res, next) => {
         return next(new BadRequest("Некорректный id карточки"))
     }
 
-    return cardModel.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true },)
+    return cardModel.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
         .then((card) => {
             if (!card) {
                 return next(new NotFound("Карточка не найдена"))

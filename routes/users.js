@@ -9,7 +9,8 @@ router.post("/signup", celebrate({
     body: Joi.object().keys({
         name: Joi.string().min(2).max(30),
         about: Joi.string().min(2).max(30),
-        avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?[\w\-\.]+(:\d+)?(\/[\w\-\.~:\/?#\[\]@!$&'()*+,;=]*)?$/),
+        avatar: Joi.string().pattern
+        (/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]+\.ru(?:\/[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]*)?(?:#)?$/),
         email: Joi.string().required().email(),
         password: Joi.string().required()
     }),
