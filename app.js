@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const errorHandler = require("./errors/errorHandler");
 const rateLimit = require('express-rate-limit')
-//const NotFound = require("./errors/notFound-error")
+const NotFound = require("./errors/notFound-error")
 
 require("dotenv").config()
 
