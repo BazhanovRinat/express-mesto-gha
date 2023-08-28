@@ -1,7 +1,5 @@
 const mongoose = require('mongoose')
 const validator = require('validator');
-// const uniqueValidator = require('mongoose-unique-validator');
-
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -22,7 +20,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (v) => validator.isURL(v),
       message: "Некорректный URL",
-    }
+    },
   },
   email: {
     type: String,
@@ -30,18 +28,14 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: (v) => validator.isEmail(v),
-      message: "Некорректный email"
-    }
+      message: "Некорректный email",
+    },
   },
   password: {
     type: String,
     required: true,
-    select: false
-  }
+    select: false,
+  },
 }, { versionKey: false })
 
-// userSchema.plugin(uniqueValidator);
-
-// userSchema.toJSON = function () {} удалить что то из показа
-
-module.exports = mongoose.model('user', userSchema); 
+module.exports = mongoose.model('user', userSchema);

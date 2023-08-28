@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
+const { celebrate, Joi } = require('celebrate');
 const router = require("express").Router();
 const auth = require("../middlewares/auth");
-const { celebrate, Joi } = require('celebrate');
+
 const { createNewCard, deleteCard, getCards, likeCard, dislakeCards } = require("../controllers/card")
 
-router.use(auth)
+router.use(auth);
 
 router.post("/cards", celebrate({
     body: Joi.object().keys({
         name: Joi.string().min(2).max(30).required(),
-        link: Joi.string().required().pattern
-        (/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]+\.ru(?:\/[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]*)?(?:#)?$/),
+        link: Joi.string().required().pattern(/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@!$&'()*+,;%-]+\.ru(?:\/[A-Za-z0-9\-._~:/?#@!$&'()*+,;%-]*)?(?:#)?$/),
     }),
 }), createNewCard)
 router.get("/cards", getCards)
@@ -44,6 +44,5 @@ router.delete("/cards/:cardId", celebrate({
         }).message("Некорректный ID пользователя"),
     }),
 }), deleteCard)
-
 
 module.exports = router;

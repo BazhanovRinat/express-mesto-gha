@@ -1,25 +1,19 @@
 const { default: mongoose } = require("mongoose");
 const cardModel = require("../models/card")
-const UnauthorizedError = require("../errors/unauthorized-error");//401
-const NotFound = require("../errors/notFound-error") //404
-const BadRequest = require("../errors/badRequest-error") //400
-const Conflict = require("../errors/conflict-error") //409
+const NotFound = require("../errors/notFound-error")
+const BadRequest = require("../errors/badRequest-error")
 const Forbidden = require("../errors/forbidden-error")
 
 const createNewCard = (req, res, next) => {
     const userId = req.user._id
-    console.log(userId)
-    const { name, link, owner } = req.body
-    return cardModel.create({name, link, owner: userId })
-        .then((card) => {
-            return res.status(201).send({ _id: card._id })
-        })
+    const { name, link } = req.body
+    return cardModel.create({ name, link, owner: userId })
+        .then((card) => res.status(201).send({ _id: card._id }))
         .catch((err) => {
-            console.log(err)
             if (err.name === "ValidationError") {
-                return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
+                return next(new BadRequest(`${Object.values(err.errors).map((error) => error.message).join(", ")}`))
             }
-            next(err)
+            return next(err)
         })
 }
 
@@ -38,36 +32,27 @@ const deleteCard = (req, res, next) => {
             if (req.user._id !== card.owner._id.toString()) {
                 return next(new Forbidden("Нельзя удалить чужую карточку"))
             }
-            card.deleteOne()
-                .then(() => {
-                    return res.status(200).send({ message: "Карточка удалена" })
-                })
+            return card.deleteOne()
+                .then(() => res.status(200).send({ message: "Карточка удалена" }))
         })
         .catch((err) => {
-            console.log(err)
             next(err)
         })
 }
 
-const getCards = (req, res, next) => {
-    return cardModel.find({})
-        .then((cards) => {
-            return res.status(200).send({ cards })
-        })
-        .catch((err) => {
-            console.log(err)
-            next(err)
-        })
-}
+const getCards = (req, res, next) => cardModel.find({})
+    .then((cards) => res.status(200).send({ cards }))
+    .catch((err) => next(err));
 
 const likeCard = (req, res, next) => {
     const { cardId } = req.params
-    console.log(req.user._id)
 
     if (!mongoose.Types.ObjectId.isValid(cardId)) {
         return next(new BadRequest("Некорректный id карточки"))
     }
-    return cardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    return cardModel.findByIdAndUpdate(cardId,
+        { $addToSet: { likes: req.user._id } },
+        { new: true })
         .then((card) => {
             if (!card) {
                 return next(new NotFound("Карточка не найдена"))
@@ -75,7 +60,6 @@ const likeCard = (req, res, next) => {
             return res.status(200).send({ message: "Лайк поставлен" })
         })
         .catch((err) => {
-            console.log(err)
             next(err)
         })
 }
@@ -96,9 +80,6 @@ const dislakeCards = (req, res, next) => {
                 return next(new BadRequest("Неправильный Id карточки"))
             }
             return res.status(200).send({ message: "Лайк убран" })
-        })
-        .catch((err) => {
-            console.log(err)
         })
 }
 

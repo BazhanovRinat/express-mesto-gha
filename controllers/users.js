@@ -1,28 +1,23 @@
-const userModel = require("../models/user");
 const bcrypt = require("bcrypt");
+const userModel = require("../models/user");
 const { getJwtToken } = require("../utils/jwt");
 const UnauthorizedError = require("../errors/unauthorized-error");
-const NotFound = require("../errors/notFound-error")
-const BadRequest = require("../errors/badRequest-error")
-const Conflict = require("../errors/conflict-error")
+const NotFound = require("../errors/notFound-error");
+const BadRequest = require("../errors/badRequest-error");
+const Conflict = require("../errors/conflict-error");
 
 const SALT_ROUNDS = 10;
 
-const getUsers = (req, res) => {
-  return userModel.find({})
-    .then((users) => {
-      return res.status(200).send(users)
-    })
-    .catch((err) => {
-      console.log(err)
-      next(err)
-    })
-}
+const getUsers = (req, res, next) => userModel.find({})
+  .then((users) => res.status(200).send(users))
+  .catch((err) => {
+    next(err)
+  })
+
 const getUserById = (req, res, next) => {
   const { userId } = req.params
 
   return userModel.findById(userId)
-    // .orFail(new Error("Error"))
     .then((user) => {
       if (!user) {
         return next(new NotFound("Пользователь не найден"))
@@ -30,11 +25,10 @@ const getUserById = (req, res, next) => {
       return res.status(200).send({ user })
     })
     .catch((err) => {
-      console.log(err.name)
       if (err.name === 'CastError') {
         return next(new BadRequest("Неправильный Id пользователя"))
       }
-      next(err)
+      return next(err)
     })
 }
 
@@ -45,10 +39,8 @@ const createNewUser = (req, res, next) => {
     return next(new BadRequest("Почта или пароль не могут быть пустыми"))
   }
 
-  bcrypt.hash(password, SALT_ROUNDS)
-    .then((hash) => {
-      return userModel.create({ name, about, avatar, email, password: hash })
-    })
+  return bcrypt.hash(password, SALT_ROUNDS)
+    .then((hash) => userModel.create({ name, about, avatar, email, password: hash }))
     .then((user) => {
       const userNoPassword = user.toObject();
       delete userNoPassword.password;
@@ -56,14 +48,13 @@ const createNewUser = (req, res, next) => {
       return res.status(201).send(userNoPassword);
     })
     .catch((err) => {
-      console.log(err)
       if (err.code === 11000) {
         return next(new Conflict("Такой пользователь уже существует"))
       }
       if (err.name === "ValidationError") {
-        return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
+        return next(new BadRequest(`${Object.values(err.errors).map((errror) => errror.message).join(", ")}`))
       }
-      next(err)
+      return next(err)
     })
 }
 
@@ -83,89 +74,86 @@ const patchUserAvatar = (req, res, next) => {
       //   return res.status(404).send({ message: "Пользователь не найден" });
       // }
       if (err.name === "ValidationError") {
-        return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
+        return next(new BadRequest(`${Object.values(err.errors).map((error) => error.message).join(", ")}`))
       }
-      next(err)
+      return next(err)
     })
 }
 
 const patchUser = (req, res, next) => {
   const { name, about } = req.body
 
-  return userModel.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+  return userModel.findByIdAndUpdate(req.user._id, { name, about },
+    { new: true, runValidators: true })
     // .orFail(new Error("Error"))
     .then((user) => {
-      console.log(user)
       if (!user) {
         return next(new NotFound("Пользователь не найден"))
       }
       return res.status(200).send({ name, about })
     })
     .catch((err) => {
-      console.log(err.name)
       // if (err.name === "Error") {
       //   return res.status(404).send({ message: "Пользователь не найден" });
       // }
       if (err.name === "ValidationError") {
-        return next(new BadRequest(`${Object.values(err.errors).map((err) => err.message).join(", ")}`))
+        return next(new BadRequest(`${Object.values(err.errors).map((error) => error.message).join(", ")}`))
       }
-      next(err)
+      return next(err)
     })
 }
 
 const login = (req, res, next) => {
   const { email, password } = req.body
 
-  //вместо if надо будет использовать celebrate
   if (!email || !password) {
     return next(new BadRequest("Почта или пароль не могут быть пустыми"))
   }
 
-  userModel.findOne({ email }).select('+password')
+  return userModel.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return next(new UnauthorizedError("Пользователь не найден"))
-        //return res.status(403).send({ message: "Пользователя не существует" })
       }
-      bcrypt.compare(password, user.password, function (err, isValidPassport) {
-        if (!isValidPassport) {
-          return next(new UnauthorizedError("Пароль не верный"))
-          //return res.status(401).send({ message: "Пароль не верный" })
-        }
-        const token = getJwtToken({ _id: user._id });
+      return bcrypt.compare(password, user.password)
+        .then((isValidPassword) => {
+          if (!isValidPassword) {
+            return next(new UnauthorizedError("Пароль не верный"));
+          }
+          const token = getJwtToken({ _id: user._id });
 
-        res.cookie("jwt", token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        return res.status(200).send({ token })
-      });
+          res.cookie("jwt", token, {
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+          })
+          return res.status(200).send({ token })
+        });
     })
     .catch((err) => {
-      console.log(err)
       next(err)
     })
 }
 
 const getCurrentUser = (req, res, next) => {
-  //console.log(req.user._id)
-  return userModel.findById(req.user._id)
+  userModel.findById(req.user._id)
     .then((user) => {
-      if (!user) {
-        return next(new NotFound("Пользователь не найден"))
-      }
+      if (!user) return next(new NotFound("Пользователь не найден"))
       return res.status(200).send({ user })
     })
     .catch((err) => {
-      console.log(err.name)
       if (err.name === 'CastError') {
         return next(new BadRequest("Неправильный Id пользователя"))
       }
-      console.log(err)
-      next(err)
+      return next(err)
     })
 }
 
-module.exports = { getUsers, getUserById, createNewUser, patchUser, patchUserAvatar, login, getCurrentUser }
-
-
+module.exports = {
+  getUsers,
+  getUserById,
+  createNewUser,
+  patchUser,
+  patchUserAvatar,
+  login,
+  getCurrentUser,
+};

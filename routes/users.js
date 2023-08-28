@@ -4,21 +4,19 @@ const { celebrate, Joi } = require('celebrate');
 const auth = require("../middlewares/auth");
 const { getUsers, getUserById, createNewUser, patchUser, patchUserAvatar, login, getCurrentUser } = require("../controllers/users")
 
-
 router.post("/signup", celebrate({
     body: Joi.object().keys({
         name: Joi.string().min(2).max(30),
         about: Joi.string().min(2).max(30),
-        avatar: Joi.string().pattern
-        (/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]+\.ru(?:\/[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]*)?(?:#)?$/),
+        avatar: Joi.string().pattern(/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@!$&'()*+,;%-]+\.ru(?:\/[A-Za-z0-9\-._~:/?#@!$&'()*+,;%-]*)?(?:#)?$/),
         email: Joi.string().required().email(),
-        password: Joi.string().required()
+        password: Joi.string().required(),
     }),
 }), createNewUser)
 router.post("/signin", celebrate({
     body: Joi.object().keys({
         email: Joi.string().required().email(),
-        password: Joi.string().required()
+        password: Joi.string().required(),
     }),
 }), login)
 
@@ -34,7 +32,7 @@ router.patch("/users/me", celebrate({
 router.get("/users/me", getCurrentUser)
 router.patch("/users/me/avatar", celebrate({
     body: Joi.object().keys({
-        avatar: Joi.string().pattern(/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@\!$&'()*+,;%\-]+(?:#)?$/),
+        avatar: Joi.string().pattern(/^(http|https):\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#@!$&'()*+,;%-]+\.ru(?:\/[A-Za-z0-9\-._~:/?#@!$&'()*+,;%-]*)?(?:#)?$/),
     }),
 }), patchUserAvatar)
 router.get("/users/:userId", celebrate({
