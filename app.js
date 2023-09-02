@@ -14,17 +14,17 @@ require("dotenv").config()
 
 // //const { PORT, MONGODB_URL } = process.env
 
-// mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
-//   useNewUrlParser: true,
-// }).then(() => {
-//   console.log("connected to db")
-// })
-
-mongoose.connect("mongodb://10.128.0.27:27017/mestodb", {
+mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
   useNewUrlParser: true,
 }).then(() => {
-  console.log("connected to db");
-});
+  console.log("connected to db")
+})
+
+// mongoose.connect("mongodb://10.128.0.27:27017/mestodb", {
+//   useNewUrlParser: true,
+// }).then(() => {
+//   console.log("connected to db");
+// });
 
 const app = express()
 
